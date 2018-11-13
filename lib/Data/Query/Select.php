@@ -45,19 +45,44 @@ class Select extends \fw\Data\Query{
         return $this;
 
     }
+    public function hasColumn($colname){
+        foreach($this->Columns as $c){
+			if(strtolower($c[0]) == strtolower($colname)) return true;
+		}
+		return false;
+    }
+    /**
+     * @return Select
+     */
     public function clearColumns(){
         $this->Columns = [];
         return $this;
     }
+
+    /**
+     * @param $source
+     * @param null $alias
+     * @return Select
+     */
     public function from($source, $alias = null){
         $this->Source = $source;
         $this->SourceAlias = $alias;
         return $this;
     }
+
+    /**
+     * @param $where
+     * @return Select
+     */
     public function where($where){
         $this->Condition = $where;
         return $this;
     }
+
+    /**
+     * @param $where
+     * @return Select
+     */
     public function having($where){
         $this->HavingCondition = $where;
         return $this;
@@ -85,13 +110,21 @@ class Select extends \fw\Data\Query{
     }
     public function join($thisField, $to, $toField){
         $this->Join[] = [$to, $thisField, $toField];
+        return $this;
     }
 
+    /**
+     * @param $name
+     * @param string $order
+     * @return Select
+     */
     public function order($name, $order = 'DESC'){
         $this->Order[$name] = $order;
+        return $this;
     }
     public function group($name, $order = 'DESC'){
         $this->Group[$name] = $order;
+        return $this;
     }
 
 
@@ -145,7 +178,7 @@ class Select extends \fw\Data\Query{
             $sql .= " LIMIT {$this->LimitStart},{$this->LimitCount}";
         }
 
-        return $sql;
+        return '('.$sql.')';
     }
     public function getBindedValues(){
         $out  = [];

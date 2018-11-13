@@ -177,8 +177,12 @@ namespace fw {
 	class App
 	{
 	    private $Router;
+	    private $Executed = false;
+        private $RunninfCwd;
+
 
 	    public function __construct(){
+            $this->RunningCwd = getcwd();
 	        $this->Router = new Router($this);
         }
 
@@ -190,7 +194,14 @@ namespace fw {
             return $this->Router;
         }
 
-		public function execute(){
+        public function __destruct()
+        {
+            chdir ($this->RunningCwd);
+           if(!$this->Executed) $this->execute();
+        }
+
+        public function execute(){
+	        $this->Executed = true;
             $uri = preg_replace('/'.preg_quote(BASE_URI, '/').'/', '', $_SERVER['REQUEST_URI'], 1);
             $uri = strtok($uri, '?');
 
@@ -206,8 +217,16 @@ namespace fw {
             $_SESSION['Router']['Last'] = LocalUrl::current();
             $GLOBALS['SC_TIME'] = (Time::getCurrentTime() - $GLOBALS['SCRIPT_INIT_TIME'] - $GLOBALS['DB_TIME']);
 
-            $body = $response->getBody();
-            $headers = $response->getHeaders();
+            if(is_string($response)){
+                $body = $response;
+                $headers = new Headers();
+            }else if(!is_null($response)){
+                $body = $response->getBody();
+                $headers = $response->getHeaders();
+            }else{
+                $body = '';
+                $headers = new Headers();
+            }
             if(is_null($body)) {
 
             }else if($body instanceof BaseTemplate){

@@ -103,11 +103,12 @@ class Hierarchical extends \fw\Data\Record
         $this->Lft = $res[0] + 1;
         $this->Rgt = $res[0] + 2;
         $this->save();
+        return $this;
     }
 
     public function delete(){
 
-        $db = $this->getRepository()->getDb();
+        $db = $this->getRepository()->getDbContext();
         $n = get_class($this);
         $query = "
 			LOCK TABLE $n WRITE;
@@ -121,9 +122,8 @@ class Hierarchical extends \fw\Data\Record
 
 		";
         $res = $db->exec($query);
-
         $db->exec("UNLOCK TABLES;");
-        return $res;
+        return $res && parent::delete();
     }
 
 

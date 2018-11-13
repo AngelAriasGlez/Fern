@@ -12,7 +12,7 @@ class Union extends \fw\Data\Query{
     }
 
     public function __toString(){
-        return '(('.implode(') UNION (', $this->Querys).'))';
+        return '(('.implode(') UNION ALL (', $this->Querys).'))';
     }
 
 };

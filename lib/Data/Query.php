@@ -7,7 +7,11 @@ class Query{
         return new static();
     }
 
-
+    /**
+     * @param null $query
+     * @return array
+     * @throws \Exception
+     */
     public function exec($query = null){
         return $this->_exec($query);
     }
@@ -17,7 +21,7 @@ class Query{
         if($query === null) {
             $query = $this->__toString();
         }
-
+        //var_dump($query);
         try{
             $sta = $db->prepare($query);
             $sta->execute($this->getBindedValues());

@@ -7,6 +7,7 @@ abstract class Controller {
 	private $Vars = array();
 	private $BaseTemplate = null;
 	private $Response;
+    private $Request;
 	
 	public function __construct()
 	{
@@ -18,17 +19,23 @@ abstract class Controller {
         };
 	    return $this->Response;
     }
+    public function getRequest(){
+        if(!$this->Request){
+            $this->Request = new Request();
+        };
+        return $this->Request;
+    }
     public function getRequestMethod(){
-        return $_SERVER["REQUEST_METHOD"];
+        return $this->getRequest()->getMethod();
     }
     public function isRequestMethod($method){
-        return strtolower($_SERVER["REQUEST_METHOD"]) == strtolower($method);
+        return strtolower($this->getRequest()->getMethod()) == strtolower($method);
     }
 
     public function allowCors(){
         $hs = $this->getResponse()->getHeaders();
         $hs->add(Header::create('Access-Control-Allow-Origin', @($_SERVER["HTTP_ORIGIN"])?$_SERVER["HTTP_ORIGIN"]:'*'));
-        $hs->add(Header::create('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE'));
+        $hs->add(Header::create('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT'));
         $hs->add(Header::create('Access-Control-Allow-Headers', 'Content-Type, authorization'));
         $hs->add(Header::create('Access-Control-Allow-Credentials', 'true'));
     }

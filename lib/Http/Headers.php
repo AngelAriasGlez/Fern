@@ -5,7 +5,7 @@
  */
 namespace fw\Http;
 class Headers {
-    private $Headers;
+    private $Headers = [];
 
 	public function remove($name){
 		unset($this->Headers[$name]);

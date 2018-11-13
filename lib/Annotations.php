@@ -81,6 +81,31 @@ class Annotations
  * @param  string $methodName            method name to get annotations
  * @return array  self::$annotationCache all annotated elements of a method given
  */
+
+    public static function getMethodsAnnotations($className)
+    {
+        $out = [];
+        $class = new \ReflectionClass($className);
+        foreach($class->getMethods() as $method) {
+            $annotations = self::parseAnnotations($method->getDocComment());
+            if (!isset(self::$annotationCache[$className . '::' . $method->getName()])) {
+                try {
+                    $annotations = self::parseAnnotations($method->getDocComment());
+
+                } catch (\ReflectionException $e) {
+                    $annotations = array();
+                }
+
+                self::$annotationCache[$className . '::' . $method->getName()] = $annotations;
+                $out[$method->getName()] = $annotations;
+            }else{
+                $out[$method->getName()] = self::$annotationCache[$className . '::' . $method->getName()];
+            }
+        }
+
+        return $out;
+    }
+
     public static function getMethodAnnotations($className, $methodName)
     {
         if (!isset(self::$annotationCache[$className . '::' . $methodName])) {

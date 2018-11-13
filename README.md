@@ -15,12 +15,10 @@ PHP Framework designed in mind for write less code.
 
 app/index.php
 
-	require_once '../framework/Loader.php';
-	$app = new fw\App();
-	$app->getRouter()->get('/', function(){
+	require '../framework/Loader.php';
+	(new fw\App())->getRouter()->get('/', function(){
 	   return '<h1>Hello word</h1>'; 
 	});
-	$app->execute();
 
 
 ### Advanced Hello word
@@ -28,11 +26,10 @@ This example counts and store origin of visitors using single MCV Controller, te
 
 **app/index.php**
 
-	require_once '../framework/Loader.php';
+	require '../framework/Loader.php';
 	$app = new fw\App();
 	$app->getRouter()->singleController('hello.php', '/');
 	$app->setDefaultDatabase(new fw\DBContext('yourdatabase', 'root', 'yourpassword'));
-	$app->execute();
 
 **app/models/Visit.php**
 

@@ -89,8 +89,15 @@ class User extends \fw\Data\Record{
         return null;
     }
 
+    public function save(){
+        if(parent::isModified('Password')){
+            $this->Password = static::encriptPassword($this->Password);
+        }
+        parent::save();
+    }
+
     private static function encriptPassword($pass){
-        return $pass;
-        //return sha1($pass);
+        //return $pass;
+        return sha1($pass);
     }
 }

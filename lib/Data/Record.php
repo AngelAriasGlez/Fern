@@ -16,6 +16,12 @@ class Record implements \ArrayAccess, \fw\Form\BindableObject{
         return $this;
     }
 
+    public function setFromArray(array $values){
+        foreach($values as $k=>$d){
+            $this->$k = $d;
+        }
+        return $this;
+    }
 	public function set($name, $value){
 		//if(!parent::isColumn($name)){
 		//if($name != 'Id'){
@@ -44,6 +50,7 @@ class Record implements \ArrayAccess, \fw\Form\BindableObject{
 		/*if(!parent::isColumn($name)){
 			throw new Exception('Column '.$name.' does not exist in table '.get_class($this));
 		}*/
+
 		if(isset($this->$name) && $this->$name != ''){
 			if(is_numeric($this->$name) && \fw\isDataClass($name)){
 				$reponame = $name.'Repository';
@@ -92,11 +99,13 @@ class Record implements \ArrayAccess, \fw\Form\BindableObject{
 		return $this->getRepository()->delete($this);
 	}
 	
-	public function pk(){
-		return $this->get($this->getRepository()->getPrimaryKeys()[0]);
+	public function pk($index = 0){
+		return $this->get($this->getRepository()->getPrimaryKey($index));
 	}
-	
-	
+
+    public function setPk($val, $index = 0){
+        return $this->set($this->getRepository()->getPrimaryKey($index), $val);
+    }
 	
 	public static function getRepository(){
 		$repoclass = get_called_class() . 'Repository';

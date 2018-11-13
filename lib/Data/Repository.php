@@ -50,7 +50,7 @@ class Repository{
             $this->Structure = self::$STRUCTURE_CACHE[$this->Name];
         }else{
             $this->Structure = Annotations::getPropertiesAnnotations($this->Name);
-
+            $rclass = new \ReflectionClass($this->Name);
             $primarykeyName = 'Id';
 
             if(count(array_column($this->Structure, 'primary')) == 0){
@@ -58,6 +58,11 @@ class Repository{
             }
 
             foreach($this->Structure as $colname=>$attrs){
+
+                if(array_key_exists('skip', $attrs) || ($rclass->hasProperty($colname) && $rclass->getProperty($colname)->isStatic())){
+                    unset($this->Structure[$colname]);
+                    continue;
+                }
                 if(!array_key_exists('datatype', $attrs)){
                     if(array_key_exists('primary', $attrs)){
                         $this->Structure[$colname]['datatype'] = 'INT';
@@ -76,7 +81,7 @@ class Repository{
                         $f = $fk[1];
                         $t = $frepo->getFieldDatatype($fk[1]);
                     }else{
-                        $pkey = $frepo->getPrimaryKeys()[0];
+                        $pkey = $frepo->getPrimaryKey();
                         $f = $pkey;
                         $t = $frepo->getPrimaryKeyDatatype($pkey);
                     }
@@ -158,6 +163,11 @@ class Repository{
         }
         return $out;
     }
+    public function getPrimaryKey($index = 0){
+        $keys = $this->getPrimaryKeys();
+        if(isset($keys[$index])) return $keys[$index];
+        return null;
+    }
     public function getFieldDatatype($fname){
         if(isset($this->Structure[$fname]['datatype'])){
             return $this->Structure[$fname]['datatype'];
@@ -201,6 +211,7 @@ class Repository{
     public function findAll(){
         return $this->query()->exec();
     }
+
 
     public function findBySql($sql){
         return $this->fetch($this->sqlQuery($sql));
@@ -324,7 +335,7 @@ class Repository{
 
             $key = $this->Db->lastInsertId($this->Name); // Non funciona con statements intermedios
             if($key) {
-                $record->set($this->getPrimaryKeys()[0], $key);
+                $record->set($this->getPrimaryKey(), $key);
                 $resultKeys[] = $key;
             }
         }
@@ -356,7 +367,7 @@ class Repository{
 
 
     public function isColumn($name){
-        if (isset($this->Structure[$name])) return true;
+        if (isset(array_change_key_case($this->Structure)[strtolower($name)])) return true;
         return false;
     }
 

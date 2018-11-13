@@ -19,7 +19,14 @@ class RecordCollection implements \ArrayAccess,\Countable,\Iterator
 	/**
 	 * @param DataRecord $record
 	 */
-	public function add(Record $record){$this->Data[] = $record;}
+	public function add(Record $record){
+	    $this->Data[] = $record;
+	    return $this;
+	}
+	public function unshift(Record $record){
+        array_unshift($this->Data, $record);
+        return $this;
+    }
 
 
 	public function count(){
@@ -47,8 +54,8 @@ class RecordCollection implements \ArrayAccess,\Countable,\Iterator
 		return ($key !== NULL && $key !== FALSE);
 	}
 	public function first(){
-		if(isset($this->Data[0])) {
-			return $this->Data[0];
+		if(reset($this->Data)) {
+			return reset($this->Data);
 		}else{
 			return null;
 		}
@@ -87,6 +94,22 @@ class RecordCollection implements \ArrayAccess,\Countable,\Iterator
         }
         return $out;
     }
+
+    public function map($function){
+        foreach($this->Data as &$r){
+            $r = call_user_func($function, $r);
+        }
+        return $this;
+    }
+    public function filter($function){
+        foreach($this->Data as $k=>$r){
+            if(!call_user_func($function, $r)){
+                unset($this->Data[$k]);
+            };
+        }
+        return $this;
+    }
+
 	public function toArray(array $fields = null){
 	    if($fields === null) return $this->Data;
         $out = array();

@@ -8,6 +8,12 @@ class Header {
     private $Name;
     private $Content;
 
+    public function __construct($name = null, $content = null)
+    {
+        $this->Name = $name;
+        $this->Content = $content;
+    }
+
     public function setName($name){
         $this->Name = $name;
     }

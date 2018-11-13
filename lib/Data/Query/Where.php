@@ -41,6 +41,9 @@ class Where{
     public function like($name, $value){
         return $this->common($name, $value, 'LIKE');
     }
+	public function notLike($name, $value){
+        return $this->common($name, $value, 'NOT LIKE');
+    }
     /*
 
     public function between($column, $a, $b);
@@ -69,6 +72,10 @@ class Where{
         $this->Query[] = "OR";
         return $this;
     }
+	public function _not(){
+        $this->Query[] = "NOT";
+        return $this;
+    }
     public function getBindedValues(){
         return $this->Values;
     }
@@ -82,6 +89,8 @@ class Where{
             case 'and':
                 return $this->_and();
             case 'or':
+                return $this->_or();
+	        case 'not':
                 return $this->_or();
             default:
                 trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
